@@ -37,10 +37,6 @@
 						<span style="background: #0000ff" [class.s_clr]="paint_color=='#0000ff'"></span>
 					</span>
 				</div>
-				<div *ngIf="painting" class="actions-wrapper">
-					<input onchange="changeBrushSize(event.target.value)" class="slider-brush" id="brush-slider" type="range" min="1" max="30" value="4">
-					<div class="range-bg"></div>
-				</div>
 			</div>
 			<div>
 				<canvas id="canvas"></canvas>
@@ -55,8 +51,7 @@
 </html 
 -->
 
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,54 +59,42 @@
 	<script src="index.js" type="text/javascript"></script>
 	<script src="https://unpkg.com/fabric@5.2.1/dist/fabric.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="index.css"/>
+	<link rel="stylesheet" type="text/css" href="icons.css"/>
 </head>
 <body>
-	<div class="switch">
-		<div class="switch_in">
-			<div class="sheme-tools">
-				<i class="icon-chevron-left" onclick="backto();"></i>
-				<div class="d-flex ai-c">
-					<button onclick="addText()">Add text</button>
-					<button onclick="toggleStickers()">Stickers</button>
-					<button onclick="toggleDrawingMode()">Drawing Mode</button>
-					<button onclick="undo()">Undo</button>
-					<button onclick="clearCanvas()">Clear</button>	
-				</div>
-				<!-- <i class="mico cl-red" onclick="clear();">settings_backup_restore</i> -->
+	<div class="schema-box">
+		<div class="schema-tools">
+			<i class="icon-chevron-left" onclick="backto();" title="Back"></i>
+			<i class="icon-type" onclick="addText()" title="Add text"></i>
+			<i class="icon-image" onclick="toggleStickers()" title="Add sticker"></i>
+			<i class="icon-pen-tool" onclick="toggleDrawingMode()" title="Drawing"></i>
+			<i class="icon-corner-up-left" onclick="undo()" title="Undo"></i>
+			<i class="icon-slash" onclick="clearCanvas()" title="Clear canvas"></i>	
+		</div>
+		<div class="canvas-box">
+
+			<!-- stickers -->
+			<div class="stickers"></div>
+
+			<!-- paint or text color palette -->
+			<span class="ei-color-pick" onclick="pickColor()" title="Pick color"></span>
+
+			<div class="ei-color-panel" onclick="event.stopPropagation();"></div>
+
+			<!-- brush size slider -->
+			<div class="size-slider-box" id="sliderWrapper">
+				<input [(ngModel)]="brushSize" onchange="changeBrushSize(event.target.value)" class="slider-brush" id="brush-slider" type="range" min="1" max="30" value="4">
+				<div class="range-bg"></div>
 			</div>
-		</div>
-	</div>
 
-	<div class="scroll-box">
-		<!-- <div *ngIf="!loaded" class="inner-loader">
-			<img src="assets/img/loading.svg" alt="">
-		</div> -->
-
-		<!-- stickers -->
-		<div class="stickers"></div>
-
-		<!-- paint or text color palette -->
-		<span class="ei-color-pick paint-brushes">
-			<button onclick="pickColor()">pick color</button>
-		</span>
-
-		<div class="ei-color-panel" onclick="event.stopPropagation();"></div>
-
-		<!-- brush size slider -->
-		<div class="size-slider-box" id="sliderWrapper">
-			<input [(ngModel)]="brushSize" onchange="changeBrushSize(event.target.value)" class="slider-brush" id="brush-slider" type="range" min="1" max="30" value="4">
-			<div class="range-bg"></div>
-		</div>
-
-		<div class="moi">
 			<canvas id="canvas" #canva></canvas>
 			<div [hidden]="!isTrashVisible" class="ei-bin">
 				<i class="icon-trash"></i>
 			</div>
 		</div>
-	</div>
 
-	<style data="test" id="myStyle" type="text/css"></style>
+		<style data="test" id="myStyle" type="text/css"></style>
+	</div>
 </div>
 </body>
 </html 

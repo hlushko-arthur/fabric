@@ -54,7 +54,7 @@ function toggleStickers() {
 	showStickers = !showStickers;
 	painting = false;
 	let stickersWrapper = document.getElementsByClassName('stickers')[0];
-	stickersWrapper.style.display = showStickers ? 'block' : 'none';
+	stickersWrapper.style.display = showStickers ? 'flex' : 'none';
 	isPaintBrushesVisible(false);
 }
 
