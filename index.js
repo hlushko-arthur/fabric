@@ -1,10 +1,6 @@
 var painting = false;
 var canvas;
-var showStickers = false;
 var isITextSelected = false;
-var isTrashVisible = false;
-var isMouseOverTrash = false;
-var selectedObject;
 var colorsList = ['#2f3640', '#f5f6fa', '#e1b12c', '#0097e6', '#c23616', '#8c7ae6', '#44bd32', '#718093', '#192a56' ];
 stickers = ['assets/stickers/1.svg', 'assets/stickers/2.svg', 'assets/stickers/3.svg', 'assets/stickers/4.svg', 'assets/stickers/5.svg', 'assets/stickers/6.svg', 'assets/stickers/bee.svg','assets/stickers/chainsaw.svg','assets/stickers/cross.svg','assets/stickers/green.svg','assets/stickers/grey.svg','assets/stickers/home.svg','assets/stickers/lighting.svg','assets/stickers/roof.svg','assets/stickers/tree.svg','assets/stickers/wood.svg','assets/stickers/xmastree.svg'];
 
@@ -44,9 +40,8 @@ function toggleDrawingMode() {
 		isDrawingMode: painting
 	})
 	isPaintBrushesVisible(painting);
+	isSliderVisible(painting);
 	canvas.renderAll();
-	
-	isSliderVisible(true);
 }
 
 function toggleStickers() {
@@ -63,9 +58,9 @@ function addText() {
 	showStickers = false;
 	endPaint();
 	const text = new fabric.IText('Comment', {
-		strokeWidth: 2,
+		strokeWidth: 1,
 		stroke: '#000000',
-		fill: '#dfff30',
+		fill: '#2f3640',
 		fontSize: 30,
 		fontFamily: "Roboto",
 		fontWeight: "bold"
@@ -77,6 +72,7 @@ function addText() {
 	text.setSelectionEnd(text.text.length);
 	text.center();
 	isITextSelected = true;
+	isPaintBrushesVisible(true);
 }
 
 function undo() {
@@ -114,69 +110,9 @@ function endPaint() {
 	});
 }
 
-function addFabricEvents() {
-	canvas.on('mouse:down', (event) => {
-		if(painting) return;
-		if(event.target) {
-			canvas.bringToFront(event.target);
-			selectedObject = canvas.getActiveObject();
-			isTrashVisible = true;
-			if(event.target.type == 'i-text') {
-				showStickers = false;
-				painting = false;
-				isITextSelected = true;
-			} else isITextSelected = false;
-		} else {
-			selectedObject = {};
-			isITextSelected = false;
-			isTrashVisible = false;
-		}
-	})
-	canvas.on('text:changed', (event) => {
-		if(event.target && event.target.name == 'ITextNumber') {
-			event.target.set('text', event.target.text.replace(/[^0-9]/g, ""))
-		}
-	})
-	canvas.on('mouse:up', (event) => {
-		return;
-		if(event.target) {
-			let trashOffset = {
-				x: trash.nativeElement.offsetLeft,
-				y: trash.nativeElement.offsetTop - paddingImage.top
-			}
-			if((event.pointer.x >= trashOffset.x - 20 && event.pointer.x <= trashOffset.x + 60) && (event.pointer.y >= trashOffset.y - 20 && event.pointer.y <= trashOffset.y + 60)) {
-				canvas.remove(selectedObject);
-				isITextSelected = false;
-				canvas.renderAll()
-				isMouseOverTrash = false;
-				isTrashVisible = false;
-				selectedObject = {};
-			} else isMouseOverTrash = false;
-		}
-	})
-	canvas.on('object:moving', (event) => {
-		return;
-		if(event.target) {
-			let trashOffset = {
-				x: trash.nativeElement.offsetLeft,
-				y: trash.nativeElement.offsetTop - paddingImage.top
-			}
-			if((event.pointer.x >= trashOffset.x - 20 && event.pointer.x <= trashOffset.x + 60) && (event.pointer.y >= trashOffset.y - 20 && event.pointer.y <= trashOffset.y + 60)) {
-				isMouseOverTrash = true;
-			} else isMouseOverTrash = false;
-		}
-	})
-	canvas.on('mouse:down', (event) => {
-		if(event.target && event.target.get('type') == 'i-text') {
-			isITextSelected = true;
-			isPaintBrushesVisible(true)
-		}
-	})
-}
-
 function changeBrushSize(event) {
-	console.log(event);
 	canvas.freeDrawingBrush.width = event;
+	canvas.renderAll();
 }
 
 function getPadding() {
@@ -194,8 +130,20 @@ function pickColor() {
 }
 
 function updatePaint(color) {
-	canvas.freeDrawingBrush.color = color;
-	isColorPanelVisible(false);
+	if(isITextSelected) {
+		activeObject = canvas.getActiveObject();
+		let text = activeObject.text;
+		activeObject.set('text', '');
+		activeObject.fill = color;
+		activeObject.set('text', text);
+		// canvas.setActiveObject(activeObject);
+		canvas.renderAll();
+		isColorPanelVisible(false);
+	} else {
+		canvas.freeDrawingBrush.color = color;
+		document.getElementById('brush-slider').style.setProperty('--slider-color', color);
+		isColorPanelVisible(false);
+	}
 }
 
 
@@ -205,12 +153,85 @@ function isColorPanelVisible(bool) {
 }
 
 function isPaintBrushesVisible(bool) {
-	let paints = document.getElementsByClassName('paint-brushes')[0];
-	paints.style.display = bool ? 'block' : 'none';
+	let paints = document.getElementsByClassName('ei-color-pick')[0];
+	paints.style.display = bool ? 'flex' : 'none';
 }
 
 function isSliderVisible(bool) {
-	let sliderWrapper = document.getElementById('sliderWrapper');
-	// sliderWrapper.style.display == 'inline-flex' ? 'none' : 'inline-flex';
-	sliderWrapper.style.display == 'block';
+	let sliderWrapper = document.getElementById('slider-wrapper');
+	sliderWrapper.style.display = bool ? 'block' : 'none';
+}
+
+function isTrashVisible(bool) {
+	let trash = document.getElementsByClassName('ei-bin')[0];
+	trash.style.display = bool ? 'inline-flex' : 'none';
+}
+
+function isMouseOverTrash(bool) {
+	let trash = document.getElementsByClassName('ei-bin')[0];
+	if(bool) return trash.classList.add('ei-bin-active');
+	trash.classList.remove('ei-bin-active');
+}
+
+
+function addFabricEvents() {
+	canvas.on('mouse:down', (event) => {
+		if(painting) return;
+		if(event.target) {
+			canvas.bringToFront(event.target);
+			isTrashVisible(true);
+			if(event.target.type == 'i-text') {
+				showStickers = false;
+				painting = false;
+				isITextSelected = true;
+			} else isITextSelected = false;
+		} else {
+			isITextSelected = false;
+			isTrashVisible(false);
+		}
+	})
+	canvas.on('text:changed', (event) => {
+		if(event.target && event.target.name == 'ITextNumber') {
+			event.target.set('text', event.target.text.replace(/[^0-9]/g, ""))
+		}
+	})
+	canvas.on('mouse:up', (event) => {
+		canvas.renderAll();
+		if(event.target) {
+			let trash = document.getElementsByClassName('ei-bin')[0];
+			let trashOffset = {
+				x: trash.offsetLeft,
+				y: trash.offsetTop
+			}
+			if((event.pointer.x >= trashOffset.x - 20 && event.pointer.x <= trashOffset.x + 60) && (event.pointer.y >= trashOffset.y - 20 && event.pointer.y <= trashOffset.y + 60)) {
+				canvas.remove(canvas.getActiveObject());
+				canvas.renderAll()
+				isTrashVisible(false);
+				isPaintBrushesVisible(false);
+			}
+			isMouseOverTrash(false);
+		} else {
+			isTrashVisible(false);
+			if(!painting) isPaintBrushesVisible(false);
+		}
+	})
+	canvas.on('object:moving', (event) => {
+		if(event.target) {
+			let trash = document.getElementsByClassName('ei-bin')[0];
+			let trashOffset = {
+				x: trash.offsetLeft,
+				y: trash.offsetTop
+			}
+			if((event.pointer.x >= trashOffset.x - 20 && event.pointer.x <= trashOffset.x + 60) && (event.pointer.y >= trashOffset.y - 20 && event.pointer.y <= trashOffset.y + 60)) {
+				return isMouseOverTrash(true);
+			}
+			isMouseOverTrash(false);
+		}
+	})
+	canvas.on('mouse:down', (event) => {
+		if(event.target && event.target.get('type') == 'i-text') {
+			isITextSelected = true;
+			isPaintBrushesVisible(true)
+		}
+	})
 }

@@ -82,7 +82,7 @@ body {
     z-index: 1;
     border-radius: 50%;
     border: 1px solid #fff;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     color: #ffffff;
@@ -188,13 +188,23 @@ body {
 	width: 40px;
 	height: 40px;
 	padding-bottom: 2px;
-	display: inline-flex;
+	display: none;
 	align-items: center;
-	display: flex;
+	/*display: flex;*/
 	justify-content: center;
 	transform: scale(1);
 	transition: transform 0.2s ease;
 }
-.ei-bin._ok {
+.ei-bin-active {
 	transform: scale(1.2);
+}
+
+
+.canvas-wrapper {
+	background: white;
+	position: absolute;
+}
+
+#slider-wrapper {
+	display: none;
 }
