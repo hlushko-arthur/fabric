@@ -3,8 +3,29 @@ var canvas;
 var isITextSelected = false;
 var colorsList = ['#2f3640', '#f5f6fa', '#e1b12c', '#0097e6', '#c23616', '#8c7ae6', '#44bd32', '#718093', '#192a56' ];
 stickers = ['assets/stickers/1.svg', 'assets/stickers/2.svg', 'assets/stickers/3.svg', 'assets/stickers/4.svg', 'assets/stickers/5.svg', 'assets/stickers/6.svg', 'assets/stickers/bee.svg','assets/stickers/chainsaw.svg','assets/stickers/cross.svg','assets/stickers/green.svg','assets/stickers/grey.svg','assets/stickers/home.svg','assets/stickers/lighting.svg','assets/stickers/roof.svg','assets/stickers/tree.svg','assets/stickers/wood.svg','assets/stickers/xmastree.svg'];
+var showStickers = false;
 
 window.addEventListener('load', () => {
+
+	// Upload file
+    document.getElementById("downFileIMG").onchange = function(e) {
+	 	var reader = new FileReader();
+	 	reader.onload = function(e) {
+	   		var image = new Image();
+	   		image.src = e.target.result;
+	   		image.onload = function() {
+	 			var img = new fabric.Image(image);
+	 			img.set({
+	 	  			left: 100,
+	 	  			top: 60
+	 			});
+	 		img.scaleToWidth(200);
+	 		canvas.add(img).setActiveObject(img).renderAll();
+	   		}
+	 	}
+	 	reader.readAsDataURL(e.target.files[0]);
+    }
+
 	let с = document.getElementById('canvas');
 	canvas = new fabric.Canvas('canvas', { selection: false, uniScaleTransform: true });
 	canvas.setWidth(800);
@@ -111,7 +132,7 @@ function endPaint() {
 }
 
 function changeBrushSize(event) {
-	canvas.freeDrawingBrush.width = event;
+	canvas.freeDrawingBrush.width = +event;
 	canvas.renderAll();
 }
 
@@ -177,6 +198,7 @@ function isMouseOverTrash(bool) {
 function addFabricEvents() {
 	canvas.on('mouse:down', (event) => {
 		if(painting) return;
+		console.log(77777, " addFabricEvents 2 ")
 		if(event.target) {
 			canvas.bringToFront(event.target);
 			isTrashVisible(true);

@@ -208,3 +208,9 @@ body {
 #slider-wrapper {
 	display: none;
 }
+
+input#downFileIMG{
+	display: none;
+}
+  
+
