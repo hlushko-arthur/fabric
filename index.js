@@ -11,7 +11,6 @@ window.addEventListener('load', () => {
     document.getElementById("downFileIMG").onchange = function(e) {
 	 	var reader = new FileReader();
 	 	reader.onload = function(e) {
-
 			fabric.Image.fromURL(
 				e.target.result,
 				function(img) {
@@ -202,7 +201,7 @@ function isMouseOverTrash(bool) {
 function addFabricEvents() {
 	canvas.on('mouse:down', (event) => {
 		if(painting) return;
-		console.log(77777, " addFabricEvents 2 ")
+
 		if(event.target) {
 			canvas.bringToFront(event.target);
 			isTrashVisible(true);
@@ -260,4 +259,8 @@ function addFabricEvents() {
 			isPaintBrushesVisible(true)
 		}
 	})
+}
+
+function backto() {
+	window.location.href = '/';
 }
