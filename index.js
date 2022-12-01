@@ -11,17 +11,75 @@ window.addEventListener('load', () => {
     document.getElementById("downFileIMG").onchange = function(e) {
 	 	var reader = new FileReader();
 	 	reader.onload = function(e) {
-	   		var image = new Image();
-	   		image.src = e.target.result;
-	   		image.onload = function() {
-	 			var img = new fabric.Image(image);
-	 			img.set({
-	 	  			left: 100,
-	 	  			top: 60
-	 			});
-	 		img.scaleToWidth(200);
-	 		canvas.add(img).setActiveObject(img).renderAll();
-	   		}
+
+			// canvas.setBackgroundImage(
+			// 	e.target.result,
+			// 	 canvas.renderAll.bind(canvas), {
+			// 		width: canvas.getWidth(),
+			// 		height: canvas.height,
+			// });
+			fabric.Image.fromURL(
+				e.target.result,
+				function(img) {
+				    canvas.setBackgroundImage(
+						   	 img,
+							 canvas.renderAll.bind(canvas),
+							  {
+
+								// width: 1000,
+								// height: 500,
+						   		scaleX: canvas.width / img.width,
+								//scaleY: 5
+								scaleY: canvas.height / img.height
+							  } 
+						   );
+
+console.log(1111, img)
+
+
+				}
+			);
+
+
+
+
+
+
+
+
+
+
+			// canvas.setBackgroundImage(url, function() {
+			// 	let img = canvas.backgroundImage;
+			// 	img.scaleX = canvas.getWidth() / img.width;
+			// 	img.scaleY = canvas.getHeight() / img.height;
+			// 	canvas.renderAll();
+			//   });
+
+
+
+
+			// canvas.setBackgroundColor(
+			// 	{
+			// 		source: e.target.result,
+			// 		"repeat": "no-repeat",
+			// 		"width": "100"					
+			// 	}, 
+			// 	canvas.renderAll.bind(canvas)
+			// );
+
+
+//	   			var image = new Image();
+//	   			image.src = e.target.result;
+	   		// 	image.onload = function() {
+	 		// 		var img = new fabric.Image(image);
+	 		// 		img.set({
+	 	  	// 			left: 100,
+	 	  	// 			top: 60
+	 		// 		});
+	 		// 	img.scaleToWidth(200);
+	 		// 	canvas.add(img).setActiveObject(img).renderAll();
+	   		// }
 	 	}
 	 	reader.readAsDataURL(e.target.files[0]);
     }
